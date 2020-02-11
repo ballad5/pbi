@@ -1,0 +1,9 @@
+{
+    "editor.tabSize": 2,
+    "tslint.configFile": "tslint.json",
+    "tslint.jsEnable": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.tslint": true
+    },
+    "tslint.packageManager": "yarn"
+}
