@@ -9,8 +9,8 @@
       "type": "node",
       "request": "launch",
       "name": "nodemon",
-      // "runtimeExecutable": "${workspaceFolder}/node_modules/nodemon/bin/nodemon.js",
-      "runtimeExecutable": "nodemon",
+      "runtimeExecutable": "${workspaceFolder}/node_modules/nodemon/bin/nodemon.js",
+      // "runtimeExecutable": "nodemon",
       "program": "${workspaceFolder}/dist/index.js",
       "restart": true,
       "env": {

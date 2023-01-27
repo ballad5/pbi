@@ -396,7 +396,7 @@ export default class AppStat extends Vue {
     })
   }
 
-  private onChangeCondition(): void {
+  private onChangeCondition(): void {    
     this.getData()
   }
 

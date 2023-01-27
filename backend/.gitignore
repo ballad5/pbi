@@ -6,3 +6,4 @@ public
 /spec/*
 .env
 test
+./src/config/api-server-95baf-firebase-adminsdk-eq8zr-9d9038589b.json

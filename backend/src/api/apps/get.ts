@@ -11,7 +11,10 @@ export async function get (req: Request, res: Response, next: NextFunction) {
   if (!type) type = SearchType.AVG
   if (!from) from = format(now.getTime() - (8 * 24 * 60 * 60 * 1000), 'YYYY-MM-DD')
   if (!to) to = format(now.getTime() - (24 * 60 * 60 * 1000), 'YYYY-MM-DD')
-  if (compareAsc(from, to) > 0 || (type !== SearchType.AVG && type !== SearchType.SUM)) {
+  
+  from = from.split('-')
+  to = to.split('-')
+  if (compareAsc(new Date(Number(from[0]), Number(from[1]) - 1, Number(from[2])), new Date(Number(to[0]), Number(to[1]) - 1, Number(to[2]))) > 0 || (type !== SearchType.AVG && type !== SearchType.SUM)) {
     throw new ApiError(ErrorDefine.BAD_REQUEST)
   }
 

@@ -32,8 +32,8 @@ export default class State {
     this.token = localStorage.getItem('signed_token') || ''
     this.account = {}
 
-    const startDate = new Date('2019-12-20T00:00:00')
-    const endDate = new Date('2019-12-24T00:00:00')
+    const startDate = new Date('2022-12-20T00:00:00')
+    const endDate = new Date('2022-12-24T00:00:00')
 
     this.totalSearchStart = format(startDate, 'YYYY-MM-DD')
     this.totalSearchEnd = format(endDate, 'YYYY-MM-DD')
