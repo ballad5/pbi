@@ -7,7 +7,7 @@ export async function get (req: Request, res: Response, next: NextFunction) {
   try {
     const authValue = req.header('Authorization')
     let token = authValue.substring(7)
-    const decoded : any = verify(token, AppSecret.jwtToken)
+    const decoded: any = verify(token, AppSecret.jwtToken)
     if (decoded.exp <= Math.floor(Date.now() / 1000) + 24 * 60 * 60) {
       token = sign({ account: decoded.account }, AppSecret.jwtToken, { expiresIn: '7d' })
     }

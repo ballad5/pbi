@@ -17,7 +17,7 @@ export class AdminUserModel extends BaseModel {
     const adminUser = await tbAdminUser.where('email', '==', email).get()
     this.querySnapshot = adminUser.docs
     await this.querySnapshot.forEach((doc) => {
-      ret = <AdminUser> doc.data()
+      ret = doc.data() as AdminUser
     })
 
     return ret
@@ -26,7 +26,7 @@ export class AdminUserModel extends BaseModel {
   async update (item: AdminUser): Promise<boolean> {
     if (!item.email) {
       return false
-    }    
+    }
 
     await this.querySnapshot.forEach((doc) => {
       this.db.collection('admin_user').doc(doc.id).update(item)

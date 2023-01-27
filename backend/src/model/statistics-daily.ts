@@ -41,7 +41,7 @@ export class StatisticsDailyModel extends BaseModel {
     //       iap_revenue: 0,
     //       pu: 0,
     //       npu: 0
-    //     }      
+    //     }
     //     date = addDays(date, 1)
     //     await this.insert(newData)
     //   }
@@ -58,7 +58,7 @@ export class StatisticsDailyModel extends BaseModel {
     const startDateKey = Number(format(startDate, 'yyyyMMdd'))
     const endDateKey = Number(format(endDate, 'yyyyMMdd'))
     let date = startDate
-    for(let i = startDateKey ; i <= endDateKey ; ) {
+    for (let i = startDateKey ; i <= endDateKey ;) {
       const dateKey = Number(format(date, 'yyyyMMdd'))
       const pushData: StatisticsDaily = {
         appId: appId,
@@ -67,7 +67,7 @@ export class StatisticsDailyModel extends BaseModel {
         nru: Math.floor(Math.random() * 100) + 1,
         iap_revenue: 0,
         pu: 0,
-        npu: 0        
+        npu: 0
       }
       ret.push(pushData)
       date = addDays(date, 1)
@@ -77,7 +77,7 @@ export class StatisticsDailyModel extends BaseModel {
     return ret
   }
 
-  async insert(item: StatisticsDaily): Promise<boolean> {
+  async insert (item: StatisticsDaily): Promise<boolean> {
 
     const tbStatisticsDaily = this.db.collection(this.tableName)
     tbStatisticsDaily.doc().set(item)

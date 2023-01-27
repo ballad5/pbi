@@ -6,7 +6,6 @@ import { sign as jwtSign } from 'jsonwebtoken'
 import { AppSecret, createHashedPassword, verifyPassword } from '../../config/secret'
 import { AdminUserModel } from '../../model/admin-user'
 
-
 export async function postSignIn (req: Request, res: Response, next: NextFunction) {
   const { email, password } = req.body
   if (!email || !password) {
@@ -20,7 +19,7 @@ export async function postSignIn (req: Request, res: Response, next: NextFunctio
   const adminUserInfo = await adminUserModel.findOne(email)
 
   const result = await verifyPassword(password, adminUserInfo.salt, adminUserInfo.password)
-  if(result) {
+  if (result) {
     console.log(result)
     adminUserInfo.date_mod = Date.now()
     adminUserModel.update(adminUserInfo)
