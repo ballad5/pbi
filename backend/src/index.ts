@@ -23,7 +23,8 @@ app.use((req, res, next) => {
 
 app.use(jwt({
   secret: AppSecret.jwtToken,
-  requestProperty: 'auth'
+  requestProperty: 'auth',
+  algorithms: ['HS256']
 }).unless({ path: ['/', '/api/account/signin', '/api/account', /^(?!\/api\/).*$/g] }))
 app.use('/api', api)
 

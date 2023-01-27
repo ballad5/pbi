@@ -30,6 +30,10 @@ export class AdminUserModel extends BaseModel {
 
     await this.querySnapshot.forEach((doc) => {
       this.db.collection('admin_user').doc(doc.id).update(item)
+      .catch((error) => {
+        console.log(error)
+        return false
+      })
     })
 
     return true

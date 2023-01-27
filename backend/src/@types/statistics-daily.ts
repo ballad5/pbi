@@ -7,4 +7,3 @@ export interface StatisticsDaily {
   pu: number
   npu: number
 }
-

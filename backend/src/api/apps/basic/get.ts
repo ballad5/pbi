@@ -1,9 +1,9 @@
 import { Request } from '../../../@types/request'
 import { Response, NextFunction } from 'express'
-import { DB } from '../../../util/db'
-import { Datastores } from '../../../config/datastore'
+// import { DB } from '../../../util/db'
+// import { Datastores } from '../../../config/datastore'
 import { ApiError, ErrorDefine } from '../../../util/error'
-import {parse, format, addDays} from 'date-fns'
+import { format } from 'date-fns'
 import { StatisticsDailyModel } from '../../../model/statistics-daily'
 import isEmpty from 'lodash/isEmpty'
 
@@ -13,13 +13,13 @@ export async function get (req: Request, res: Response, next: NextFunction) {
   }
   let { platform, country, from, to } = req.query
 
-  if(isEmpty(from)) {
+  if (isEmpty(from)) {
     from = new Date()
   } else {
     from = from.split('-')
     from = new Date(Number(from[0]), Number(from[1]) - 1, Number(from[2]))
   }
-  if(isEmpty(to)) {
+  if (isEmpty(to)) {
     to = new Date()
   } else {
     to = to.split('-')
@@ -39,6 +39,6 @@ export async function get (req: Request, res: Response, next: NextFunction) {
   ret.appName = req.params.appId === '10' ? 'GAME A' : 'GAME B'
   ret.countries = ['KR']
   ret.data = statisticsDailyData
-              
+
   res.json(ret)
 }

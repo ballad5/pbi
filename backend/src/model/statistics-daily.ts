@@ -22,6 +22,7 @@ export class StatisticsDailyModel extends BaseModel {
     .then((querySnapshot) => {
       this.querySnapshot = querySnapshot.docs
     }).catch((error) => {
+      console.log(error)
       return false
     })
 
@@ -80,7 +81,7 @@ export class StatisticsDailyModel extends BaseModel {
   async insert (item: StatisticsDaily): Promise<boolean> {
 
     const tbStatisticsDaily = this.db.collection(this.tableName)
-    tbStatisticsDaily.doc().set(item)
+    await tbStatisticsDaily.doc().set(item)
     return true
   }
 
