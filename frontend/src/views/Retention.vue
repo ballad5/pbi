@@ -10,14 +10,19 @@
       <v-col class="d-flex" cols="12" md="3">
         <v-select 
           :items="platforms"
+          item-title="text"
+          item-value="value"
           label="platform"
           v-model="alias"
           @change="onChangeCondition"
           outlined
           dense
         ></v-select>
+        
         <v-select
           :items="isoCountries"
+          item-title="text"
+          item-value="value"
           label="country"
           v-model="country"
           @change="onChangeCondition"
@@ -28,33 +33,13 @@
       </v-col>
       <v-col class="d-flex" cols="12" md="3">
         <div class="datepicker-trigger">
-          <v-text-field
-            id="searchDateTrigger"
-            label="Selected dates"
-            prepend-inner-icon="mdi-calendar-month"
-            :value="formatSearchDate"
-            single-line
-            outlined
-            readonly
-            dense
-          ></v-text-field>
-
-          <AirbnbStyleDatepicker
-            :trigger-element-id="'searchDateTrigger'"
-            :mode="'range'"
-            :fullscreen-mobile="true"
-            :date-one="searchStart"
-            :date-two="searchEnd"
-            :end-date="maxSearchDate"
-            @date-one-selected="val => { searchStart = val }"
-            @date-two-selected="val => { searchEnd = val }"
-            @apply="onChangeCondition"
-          ></AirbnbStyleDatepicker>
+          <Datepicker v-model="date" range :format="dateFormat" :enable-time-picker="false"
+              @update:modelValue="onChangeCondition"></Datepicker>                       
         </div>
       </v-col>
       <v-spacer></v-spacer>
       <v-col cols="12" md="4" class="body-2 d-flex justify-end">
-        <v-radio-group v-model="displayType" row dense>
+        <v-radio-group inline v-model="displayType" row dense>
           <v-radio label="접속 % + 유저 수" value="both"></v-radio>
           <v-radio label="유저 수" value="count"></v-radio>
           <v-radio label="접속 %" value="percent"></v-radio>
@@ -72,7 +57,7 @@
     <v-row>
       <v-col cols="12">
         <template v-if="list">
-          <v-simple-table class="table-collapse">
+          <v-table >  
             <thead>
               <tr class="light-blue lighten-5">
                 <th></th>
@@ -82,7 +67,6 @@
             <tbody>
               <tr v-for="(item, key) in list" :key="key">
                 <td class="text-center">{{ key }}</td>
-                  <!-- {{ console.log(displayType) }} -->
                 <td class="text-center" v-for="(data, dataKey) in item" :key="dataKey" :style="cellColor(data.percent)">
                   <template v-if="displayType === 'both'">
                     {{ data.percent }}%<br>{{ data.count }}
@@ -96,7 +80,7 @@
                 </td>
               </tr>
             </tbody>
-          </v-simple-table>
+          </v-table>
         </template>
       </v-col>
     </v-row>
@@ -108,45 +92,63 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Watch } from 'vue-property-decorator'
+import { Component, Vue, Watch } from 'vue-facing-decorator'
 import format from 'date-fns/format'
-import uniq from 'lodash.uniq'
+import Datepicker from '@vuepic/vue-datepicker'
+import '@vuepic/vue-datepicker/dist/main.css'
+import { dataStore, accountStore, appStore, commonStore } from '@/store'
+import { useRouter, useRoute } from 'vue-router'
 
-@Component({})
+@Component({
+  components: {
+    Datepicker,
+  }
+})
 export default class Retention extends Vue {
-  private syncing: boolean = false
-  private dateFormat: string = 'YYYY-MM-DD'
-  private alias: string = 'mobile'
-  private country: string = 'ALL'
-  private searchStart: string = ''
-  private searchEnd: string = ''
-  private maxSearchDate: string = ''
-  private platforms = [
+  private dataStore = dataStore()
+  private accountStore = accountStore()
+  private appStore = appStore()
+  private commonStore = commonStore()
+
+  private route = useRoute()
+  private router = useRouter()
+
+  public syncing: boolean = false
+  public dateFormat = 'yyyy-MM-dd'
+  public alias: string = 'mobile'
+  public country: string = 'ALL'
+  public searchStart: string = ''
+  public searchEnd: string = ''
+  public maxSearchDate: string = ''
+  public platforms = [
     { text: 'ALL', value: 'mobile' }, { text: 'GOOGLE', value: 'mobile_android' }
   ]
-  private countries: string[] = []
-  private displayType: string = 'both'
+  public countries: any[any] = []
+  public displayType: string = 'both'
 
-  private get appName(): string { return this.$store.getters.appName }
-  private get isoCountries(): any[] {
+  public get appName(): string { return this.appStore.getAppName }
+  public get isoCountries(): any[] {
     const ret: any[] = [{ text: 'ALL', value: 'ALL' }]
     if (this.countries.length > 0) {
-      this.countries.forEach((row) => {
-        if (this.$store.getters.isoCountries[row]) {
-          ret.push({ text: this.$store.getters.isoCountries[row], value: row })
+      this.countries.forEach((row: any) => {
+        if (this.commonStore.isoCountries[row]) {
+          ret.push({ text: this.commonStore.isoCountries[row], value: row })
         }
       })
     }
     return ret
   }
-  private get formatSearchDate(): string {
-    return format(this.searchStart, this.dateFormat)
-      + ' ~ ' + format(this.searchEnd, this.dateFormat)
+  
+  public get date() { return [this.searchStart, this.searchEnd] }
+  public set date(value : any[]) {   
+    this.searchStart = format(new Date(value[0]), this.dateFormat)
+    this.searchEnd = format(new Date(value[1]), this.dateFormat)
   }
-  private get list(): any {
-    return this.$store.getters.appRetentionList
+
+  public get list(): any {
+    return this.appStore.getAppRetentionList
   }
-  private get listHeaders(): string[] {
+  public get listHeaders(): string[] {
     if (!this.list) {
       return []
     }
@@ -156,7 +158,7 @@ export default class Retention extends Vue {
     }
     return listValues ? Object.keys(listValues[0]) : []
   }
-  private get additionalAvgs(): any[] {
+  public get additionalAvgs(): any[] {
     const listValues: object[] = Object.values(this.list)
     if (listValues.length <= 0) {
       return []
@@ -178,7 +180,7 @@ export default class Retention extends Vue {
 
     return ret
   }
-  private get clipboardText(): string {
+  public get clipboardText(): string {
     const localeOption = { style: 'percent', maximumFractionDigits: 1 }
     let txt = '\t인스톨\t' + this.listHeaders.join('\t') + '\n'
     txt += '가중평균\t\t' + this.additionalAvgs.map((item) => {
@@ -213,8 +215,8 @@ export default class Retention extends Vue {
     const now = new Date()
     const offset = now.getTimezoneOffset() * 60 * 1000
     const nowTime = now.getTime() + offset
-    this.searchStart = this.$store.getters.totalSearchStart
-    this.searchEnd = this.$store.getters.totalSearchEnd
+    this.searchStart = this.dataStore.getTotalSearchStart
+    this.searchEnd = this.dataStore.getTotalSearchEnd
   }
 
   private mounted(): void {
@@ -230,32 +232,30 @@ export default class Retention extends Vue {
     }
   }
 
-  private getData(): void {
-    if (this.syncing) {
+  public getData(): void {
+    if (this.syncing) {      
       return
     }
 
     this.syncing = true
-    const appId = parseInt(this.$route.params.appId, 10)
+    const appId: number = Number(this.route.params.appId)
     if (this.countries.length <= 0) {
-      this.$store.dispatch('GET_APP_RETENTION_SEGMENTS', appId)
-      .then(({ countries }) => {
+      this.appStore.actionAppRetentionSegments(Number(appId))
+      .then((countries: any) => {
         if (!countries) {
           alert('데이터 로드 실패')
           return
         }
-
-        this.countries = uniq(countries)
-        this.$store.dispatch('GET_APP_RETENTION_DATA', {
-          appId, alias: this.alias, country: this.country,
-          from: this.searchStart.replace(/\-/g, ''),
-          to: this.searchEnd.replace(/\-/g, '')
-        })
+        this.appStore.actionAppRetentionData(
+          appId, this.alias, this.country,
+          this.searchStart.replace(/-/g,''),
+          this.searchEnd.replace(/-/g, '')
+        )
       })
       .catch((err) => {
         if (err && err.status === 401) {
-          this.$store.commit('SIGNOUT')
-          this.$router.push('/signin')
+          this.accountStore.signOut()
+          this.router.push('/signin')
           return
         }
         alert('데이터 로드 실패')
@@ -264,15 +264,15 @@ export default class Retention extends Vue {
         this.syncing = false
       })
     } else {
-      this.$store.dispatch('GET_APP_RETENTION_DATA', {
-        appId, alias: this.alias, country: this.country,
-        from: this.searchStart.replace(/\-/g, ''),
-        to: this.searchEnd.replace(/\-/g, '')
-      })
+      this.appStore.actionAppRetentionData(  
+        appId, this.alias, this.country,
+        this.searchStart.replace(/-/g, ''),
+        this.searchEnd.replace(/-/g, '')
+      )
       .catch((err) => {
         if (err && err.status === 401) {
-          this.$store.commit('SIGNOUT')
-          this.$router.push('/signin')
+          this.accountStore.signOut()
+          this.router.push('/signin')
           return
         }
         alert('데이터 로드 실패')
@@ -283,16 +283,16 @@ export default class Retention extends Vue {
     }
   }
 
-  private onChangeCondition(): void {
+  public onChangeCondition(): void {   
     this.getData()
   }
 
-  private cellColor(percent: number): string {
+  public cellColor(percent: number): string {
     return `background-color: rgba(0, 0, 255, ${(percent / 100).toFixed(3)}); ` +
       `color: ${percent > 70 ? '#ffffff' : '#000000'}`
   }
 
-  private doCopy(): void {
+  public doCopy(): void {
     const tempElem = document.createElement('textarea')
     tempElem.value = this.clipboardText
     document.body.appendChild(tempElem)
@@ -302,7 +302,7 @@ export default class Retention extends Vue {
     document.body.removeChild(tempElem)
   }
 
-  private sumPercent(row: any): number {
+  public sumPercent(row: any): number {
     return Object.entries(row).reduce(
       (acc, [key, value]: [string, any]) => key === 'D_0' ? acc : acc + value.percent, 0
     )
@@ -314,4 +314,6 @@ export default class Retention extends Vue {
 .table-collapse table { border-collapse: collapse; }
 .table-collapse th, .table-collapse td { border: 1px solid #dddddd; }
 .v-input { font-size: 14px; }
+.datepicker-trigger { width: 100%; }
+#searchDateTrigger { cursor: pointer; }
 </style>

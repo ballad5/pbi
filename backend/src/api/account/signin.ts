@@ -22,7 +22,7 @@ export async function postSignIn (req: Request, res: Response, next: NextFunctio
   if (result) {
     console.log(result)
     adminUserInfo.date_mod = Date.now()
-    await adminUserModel.update(adminUserInfo)
+    adminUserModel.update(adminUserInfo)
   } else {
     throw new ApiError(ErrorDefine.INTERNAL_SERVER_ERROR)
   }

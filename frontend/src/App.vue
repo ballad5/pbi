@@ -1,17 +1,8 @@
 <template>
-  <v-app>
-    <router-view></router-view>
-  </v-app>
+  <router-view />
 </template>
 
-<script lang="ts">
-import { Vue, Component } from 'vue-property-decorator'
-import CommonLayout from './layouts/CommonLayout.vue'
-
-export default Vue.extend({
-  name: 'App',
-  data: () => ({
-    //
-  }),
-})
+<script lang="ts" setup>
+  //
+  import CommonLayout from './layouts/CommonLayout.vue'
 </script>

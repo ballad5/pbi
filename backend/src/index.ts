@@ -1,4 +1,5 @@
 import express from 'express'
+import cors from 'cors'
 import jwt from 'express-jwt'
 import { ApiError, ErrorDefine } from './util/error'
 import api from './api'
@@ -7,6 +8,7 @@ import { config } from 'dotenv'
 
 config()
 const app = express()
+app.use(cors())
 
 app.set('port', process.env.PORT || 1340)
 app.use(require('connect-history-api-fallback')())
@@ -23,8 +25,7 @@ app.use((req, res, next) => {
 
 app.use(jwt({
   secret: AppSecret.jwtToken,
-  requestProperty: 'auth',
-  algorithms: ['HS256']
+  requestProperty: 'auth'
 }).unless({ path: ['/', '/api/account/signin', '/api/account', /^(?!\/api\/).*$/g] }))
 app.use('/api', api)
 

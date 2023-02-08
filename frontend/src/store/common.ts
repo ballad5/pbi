@@ -1,19 +1,15 @@
-import Vue from 'vue'
-import Vuex, { Module, GetterTree, ActionTree, MutationTree, ActionContext } from 'vuex'
-import axios from 'axios'
-import State from './def/state'
+import { defineStore } from 'pinia'
 
-Vue.use(Vuex)
 
-export default class CommonStore implements Module<State, State> {
-  public state: State = new State()
-
-  public getters: GetterTree<State, State> = {
-    myAccount: () => this.state.account,
-    loginToken: () => 'Bearer ' + this.state.token,
-    lastUri: () => this.state.lastUri || '/',
-    axiosConfig: () => ({ headers: { Authorization: 'Bearer ' + this.state.token } }),
-    isoCountries: () => ({
+export const commonStore = defineStore('common', {
+  state: () => ({
+    uri: localStorage.getItem('last_uri') || '/',
+  }),
+  getters: {
+    lastUri(state): string {
+      return state.uri
+    },
+    isoCountries(): any { return {
       AF: 'Afghanistan', AX: 'Aland Islands', AL: 'Albania', DZ: 'Algeria', AS: 'American Samoa',
       AD: 'Andorra', AO: 'Angola', AI: 'Anguilla', AQ: 'Antarctica', AG: 'Antigua And Barbuda',
       AR: 'Argentina', AM: 'Armenia', AW: 'Aruba', AU: 'Australia', AT: 'Austria', AZ: 'Azerbaijan',
@@ -60,61 +56,12 @@ export default class CommonStore implements Module<State, State> {
       UY: 'Uruguay', UZ: 'Uzbekistan', VU: 'Vanuatu', VE: 'Venezuela', VN: 'Viet Nam', VG: 'Virgin Islands, British',
       VI: 'Virgin Islands, U.S.', WF: 'Wallis And Futuna', EH: 'Western Sahara', YE: 'Yemen', ZM: 'Zambia',
       ZW: 'Zimbabwe', UK: 'United Kingdom'
-    })
-  }
-
-  public mutations: MutationTree<State> = {
-    SIGNIN(state: State, signInRes: any): void {
-      const { account, token } = signInRes
-      localStorage.setItem('signed_token', token)
-
-      state.token = token
-      state.account = account
+    }}
+  },
+  actions: {
+    routing(path: string) {
+      this.uri = path
+      localStorage.setItem('last_uri', path)
     },
-    GET_ACCOUNT(state: State, res: any): void {
-      localStorage.setItem('signed_token', res.token)
-      state.account = res.account
-      state.token = res.token
-    },
-    SIGNOUT(state: State): void {
-      localStorage.removeItem('signed_token')
-
-      state.account = {}
-      state.token = ''
-    },
-    ROUTING(state: State, uri: string): void {
-      localStorage.setItem('last_uri', uri)
-      state.lastUri = uri
-    }
-  }
-
-  public actions: ActionTree<State, State> = {
-    SIGNIN(context: ActionContext<State, State>, signInReq: any): Promise<void> {
-      return new Promise((resolve, reject) => {
-        axios.post('/api/account/signin', signInReq)
-        .then(({ data }) => {
-          context.commit('SIGNIN', data)
-          resolve()
-        })
-        .catch((unusedRes) => {
-          reject()
-        })
-      })
-    },
-    GET_ACCOUNT(context: ActionContext<State, State>): Promise<void> {
-      return new Promise((resolve, reject) => {
-        axios.get('/api/account', context.getters.axiosConfig)
-        .then(({ data }) => {
-          if (!data) {
-            reject()
-            return
-          }
-          context.commit('GET_ACCOUNT', data)
-        })
-        .catch(() => {
-          reject()
-        })
-      })
-    }
-  }
-}
+  },
+})

@@ -2,95 +2,79 @@
   <v-app id="inspire">
     <v-navigation-drawer v-model="drawer" app>
       <v-list-item to="/">
-        <v-list-item-content>
+        <v-list>
           <v-list-item-title class="title">
             Team
           </v-list-item-title>
           <v-list-item-subtitle>
             Team BI
           </v-list-item-subtitle>
-        </v-list-item-content>
+        </v-list>
       </v-list-item>
-
       <v-divider></v-divider>
 
       <v-list dense>
-        <v-subheader>Team</v-subheader>
-
-        <v-list-item-group v-model="selectedMenu">
-          <v-list-group
-            prepend-icon="mdi-view-dashboard"
-            :value="dashboards.findIndex((row) => row.path === $route.path) >= 0"
-            no-action
-          >
-            <template v-slot:activator>
-              <v-list-item-title>Dashboard</v-list-item-title>
+        <v-list-subheader>Team</v-list-subheader>
+          <v-list-group value="dashboards">
+            <template v-slot:activator="{ props }">
+              <v-list-item
+                v-bind="props"
+                prepend-icon="mdi-view-dashboard"
+                title="dashboards"
+              ></v-list-item>
             </template>
-
-            <v-list-item
-              v-for="item in dashboards"
-              :key="item.path"
-              :value="item.path"
-              @click="onClickMenu(item)"
-              dense
-            >
-              <v-list-item-title v-text="item.text"></v-list-item-title>
-              <v-list-item-icon>
-                <v-icon v-text="item.icon"></v-icon>
-              </v-list-item-icon>
-            </v-list-item>
+              <v-list-item
+                v-for="item in dashboards"
+                :key="item.path"
+                :value="item.path"
+                :title="item.text"
+                :prepend-icon="item.icon"
+                @click="onClickMenu(item)"
+                dense
+              ></v-list-item>
           </v-list-group>
-        </v-list-item-group>
-      </v-list>
-
+        </v-list>
       <v-list dense>
-        <v-subheader>Projects</v-subheader>
-        
-        <v-list-item-group v-model="selectedMenu">
-          <v-list-group
-            v-for="item in menuGroups"
-            :key="item.path"
-            :prepend-icon="item.icon"
-            :value="item.menuList.findIndex((row) => row.path === $route.path) >= 0"
-            no-action
-          >
-            <template v-slot:activator>
-              <v-list-item-content>
-                <v-list-item-title v-text="item.text"></v-list-item-title>
-              </v-list-item-content>
-            </template>
-
+        <v-list-group 
+          v-for="item in menuGroups"
+          :key="item.text"
+          :title="item.text">
+          <template v-slot:activator="{ props }">
             <v-list-item
+              v-bind="props"
+              :key="item.text"
+              :prepend-icon="item.icon"
+              :value="item.menuList.findIndex((row) => row.path === route.path) >= 0"
+              no-action
+            ></v-list-item>
+            </template>
+              <v-list-item
               v-for="menu in item.menuList"
-              :key="menu.path"
-              :value="menu.path"
-              @click="onClickMenu(menu)"
-              dense
-            >
-              <v-list-item-title v-text="menu.text"></v-list-item-title>
-              <v-list-item-icon>
-                <v-icon v-text="menu.icon"></v-icon>
-              </v-list-item-icon>
-            </v-list-item>
-
-          </v-list-group>
-        </v-list-item-group>
+                :key="menu.path"
+                :value="menu.path"
+                :title="menu.text"
+                :prepend-icon="menu.icon"
+                @click="onClickMenu(menu)"
+                dense
+                >
+              </v-list-item>          
+        </v-list-group>
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar app color="blue">
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>Team</v-toolbar-title>
+    <v-toolbar @click.stop="drawer = !drawer" color="deep-purple accent-4">
+      <v-toolbar-title>Menu</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-tooltip bottom>
-        <template v-slot:activator="{ on }">
-          <v-btn tile large icon @click="signOut" v-on="on">
+        <template v-slot:activator>
+          <v-btn tile large icon @click="signOut" >
             <v-icon>mdi-exit-to-app</v-icon>
           </v-btn>
         </template>
         <span>Sign Out</span>
       </v-tooltip>
-    </v-app-bar>
+    </v-toolbar>
+
 
     <v-content>
       <v-container fluid fill-height>
@@ -102,22 +86,24 @@
 
     <v-footer app>
       <v-spacer></v-spacer>
-      <div class="grey--text darken-1">&copy; 2019 LS.</div>
+      <div class="grey--text darken-1">&copy; 2023 LS.</div>
     </v-footer>
   </v-app>
 </template>
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator'
-import { AuthPrivilege } from '../utils/enum-def'
+import { Component, Vue } from 'vue-facing-decorator'
+import { accountStore } from '@/store'
+import { useRouter, useRoute } from 'vue-router'
+import { AuthPrivilege } from '@/util/enum'
 
 @Component({})
 export default class CommonLayout extends Vue {
-  private drawer: boolean = true
-  private dashboards = [
+  public drawer: boolean = true
+  public dashboards = [
     { text: 'Game Report', icon: 'mdi-table-large', path: '/' }
   ]
-  private menuGroups = [
+  public menuGroups = [
     {
       text: 'GAME A', icon: 'mdi-gamepad-variant-outline',
       menuList: [
@@ -133,28 +119,29 @@ export default class CommonLayout extends Vue {
       ]
     }
   ]
-  private selectedMenu = ''
+  public selectedMenu = ''
 
-  private get PrivilegeDef() {
-    return AuthPrivilege
-  }
-  private get accountPrivilege(): number {
-    return this.$store.getters.myAccount.priv
+  private accountStore = accountStore()
+  public route = useRoute()
+  public router = useRouter()
+
+  // public get PrivilegeDef() {
+  //   return AuthPrivilege
+  // }
+  // public get accountPrivilege(): number {
+  //   return this.$store.getters.myAccount.priv
+  // }
+
+
+  public signOut(): void {    
+    this.router.push('signin')
+    this.accountStore.signOut()
   }
 
-  private signOut(): void {
-    this.$store.commit('SIGNOUT')
-    this.$router.push('/signin')
-  }
-
-  private mounted(): void {
-    this.selectedMenu = this.$route.path
-  }
-
-  private onClickMenu(menu: any): void {
+  public onClickMenu(menu: any): void {
     if (menu.path) {
-      if (this.$route.path !== menu.path) {
-        this.$router.push(menu.path)
+      if (this.route.path !== menu.path) {
+        this.router.push(menu.path)
       }
     } else {
       alert('!!!')

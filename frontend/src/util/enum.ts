@@ -3,3 +3,4 @@ export enum AuthPrivilege {
   MANAGER = 1,
   MASTER = 2
 }
+

@@ -1,65 +1,67 @@
 <template>
-  <v-content>
-    <v-container fluid fill-height>
-      <v-layout align-center justify-center>
-        <v-flex xs12 sm8 md4>
-          <v-card class="elevation-11">
-            <v-toolbar color="blue" dark>
-              <v-toolbar-title>Your email.</v-toolbar-title>
-            </v-toolbar>
+  <div class="py-4">
+    <v-card
+      class="mx-auto pa-12 pb-8"
+      elevation="8"
+      max-width="448"
+      rounded="lg"
+    >
+      <div class="text-subtitle-1 text-medium-emphasis">Account</div>
+      <v-text-field
+        density="compact"
+        placeholder="Email address"
+        prepend-inner-icon="mdi-email-outline"
+        variant="outlined"
+        v-model="email"
+        :rules="[rules.required, rules.email]"
+      ></v-text-field>
 
-            <v-card-text>
-              <v-form>
-                <v-text-field
-                  prepend-icon="mdi-email"
-                  name="email"
-                  label="E-mail"
-                  type="text"
-                  v-model="email"
-                  :rules="[rules.required, rules.email]"
-                ></v-text-field>
-                <v-text-field
-                  prepend-icon="mdi-lock"
-                  name="password"
-                  label="Password"
-                  type="password"
-                  v-model="password"
-                  :rules="[rules.required]"
-                ></v-text-field>
-              </v-form>
-            </v-card-text>
+      <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
+        Password
+      </div>
 
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn
-                color="primary"
-                :disabled="syncing"
-                @click="doSignIn"
-              >
-                SIGN IN
-              </v-btn>
-            </v-card-actions>
-          </v-card>
+      <v-text-field
+        :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
+        :type="visible ? 'text' : 'password'"
+        density="compact"
+        placeholder="Enter your password"
+        prepend-inner-icon="mdi-lock-outline"
+        variant="outlined"
+        v-model="password"
+        :rules="[rules.required]"
+        @click:append-inner="visible = !visible"
+      ></v-text-field>
 
-          <v-alert v-model="loginFail" type="error">
-            Please check your email end/or password and try again.
-          </v-alert>
-        </v-flex>
-      </v-layout>
-    </v-container>
-  </v-content>
+      <v-btn
+        block
+        class="mb-8"
+        color="blue"
+        size="large"
+        variant="tonal"
+        :disabled="syncing"
+        @click="signIn"
+      >
+        Log In
+      </v-btn>
+    </v-card>
+  </div>
 </template>
 
+
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+
+import { Component, Vue } from 'vue-facing-decorator'
+import { accountStore } from '@/store'
+import { useRouter, useRoute } from 'vue-router'
 
 @Component({})
 export default class SignIn extends Vue {
-  private email: string = 'test@test.com'
-  private password: string = '1234'
-  private syncing: boolean = false
-  private loginFail: boolean = false
-  private rules = {
+  public visible = false
+  public email: string = 'test@test.com'
+  public password: string = '1234'
+  public syncing: boolean = false
+  public loginFail: boolean = false
+  public rules = {
     required: (value: string) => !!value || 'Required.',
     email: (value: string) => {
       // tslint:disable-next-line:max-line-length
@@ -68,12 +70,16 @@ export default class SignIn extends Vue {
     }
   }
 
-  private doSignIn(): void {
-    this.syncing = true
+  public route = useRoute()
+  private router = useRouter()
 
-    this.$store.dispatch('SIGNIN', { email: this.email, password: this.password })
+  private accountStore = accountStore()
+
+  async signIn(): Promise<void> {
+    this.syncing = true
+    await this.accountStore.signIn({ email: this.email, password: this.password })
     .then(() => {
-      this.$router.push(this.$store.getters.lastUri)
+      this.router.push('/')
     })
     .catch(() => {
       this.loginFail = true
@@ -81,6 +87,7 @@ export default class SignIn extends Vue {
     .finally(() => {
       this.syncing = false
     })
+  
   }
 }
 </script>
