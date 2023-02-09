@@ -86,7 +86,7 @@ export const appStore = defineStore('app', {
     actionAppRetentionData(appId: Number, alias: string, country: string, from: string, to: string ): Promise<void> {
       return new Promise((resolve, reject) => {
         const account = accountStore()
-        axios.get(baseUrl+`/api/apps/retention/${appId}`, account.auth)
+        axios.get(baseUrl+`/api/apps/retention/${appId}?from=${from}&to=${to}&country=${country}`, account.auth)
         .then(({ data }) => {
           if (!data) {
             reject()
