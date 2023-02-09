@@ -9,12 +9,12 @@ export async function get (req: Request, res: Response, next: NextFunction) {
   let { type, from, to } = req.query
   const now = new Date()
   if (!type) type = SearchType.AVG
-  if (!from) from = format(now.getTime() - (8 * 24 * 60 * 60 * 1000), 'YYYY-MM-DD')
-  if (!to) to = format(now.getTime() - (24 * 60 * 60 * 1000), 'YYYY-MM-DD')
+  // if (!from) from = format(now.getTime() - (8 * 24 * 60 * 60 * 1000), 'YYYY-MM-DD')
+  // if (!to) to = format(now.getTime() - (24 * 60 * 60 * 1000), 'YYYY-MM-DD')
 
-  from = from.split('-')
-  to = to.split('-')
-  if (compareAsc(new Date(Number(from[0]), Number(from[1]) - 1, Number(from[2])), new Date(Number(to[0]), Number(to[1]) - 1, Number(to[2]))) > 0 || (type !== SearchType.AVG && type !== SearchType.SUM)) {
+  const fromCheck = from.split('-')
+  const toCheck = to.split('-')
+  if (compareAsc(new Date(Number(fromCheck[0]), Number(fromCheck[1]) - 1, Number(fromCheck[2])), new Date(Number(toCheck[0]), Number(toCheck[1]) - 1, Number(toCheck[2]))) > 0 || (type !== SearchType.AVG && type !== SearchType.SUM)) {
     throw new ApiError(ErrorDefine.BAD_REQUEST)
   }
 
@@ -48,27 +48,30 @@ export async function get (req: Request, res: Response, next: NextFunction) {
     }
     summaries.push(total)
 
-    const dailyData = [{ log_date: 20191220, dau: 868, nru: 250, iap_revenue: 0 },
-                        { log_date: 20191221, dau: 889, nru: 202, iap_revenue: 897 },
-                        { log_date: 20191222, dau: 890, nru: 227, iap_revenue: 399 },
-                        { log_date: 20191223, dau: 872, nru: 216, iap_revenue: 1398 },
-                        { log_date: 20191224, dau: 869, nru: 216, iap_revenue: 2596 }]
+    // const dailyData = [{ log_date: 20191220, dau: 868, nru: 250, iap_revenue: 0 },
+    //                     { log_date: 20191221, dau: 889, nru: 202, iap_revenue: 897 },
+    //                     { log_date: 20191222, dau: 890, nru: 227, iap_revenue: 399 },
+    //                     { log_date: 20191223, dau: 872, nru: 216, iap_revenue: 1398 },
+    //                     { log_date: 20191224, dau: 869, nru: 216, iap_revenue: 2596 }]
+    let dailyData: any
+    dailyData = fakedDilyData(from, to)
     dailyData.forEach(value => {
       value.dau = Number(value.dau)
       value.nru = Number(value.nru)
       value.iap_revenue = Number(value.iap_revenue)
     })
 
-    const dailyApps = [{ log_date: 20191220, app_id: 10, app_name: 'GAME A', list_order: 9, dau: 503, nru: 115, iap_revenue: 0 },
-    { log_date: 20191220, app_id: 14, app_name: 'GAME B', list_order: 104, dau: 365, nru: 135, iap_revenue: 0 },
-    { log_date: 20191221, app_id: 10, app_name: 'GAME A', list_order: 9, dau: 510, nru: 87, iap_revenue: 5.98 },
-    { log_date: 20191221, app_id: 14, app_name: 'GAME B', list_order: 104, dau: 379, nru: 115, iap_revenue: 2.99 },
-    { log_date: 20191222, app_id: 10, app_name: 'GAME A', list_order: 9, dau: 466, nru: 92, iap_revenue: 3.99 },
-    { log_date: 20191222, app_id: 14, app_name: 'GAME B', list_order: 104, dau: 424, nru: 135, iap_revenue: 0 },
-    { log_date: 20191223, app_id: 10, app_name: 'GAME A', list_order: 9, dau: 456, nru: 91, iap_revenue: 9.99 },
-    { log_date: 20191223, app_id: 14, app_name: 'GAME B', list_order: 104, dau: 416, nru: 125, iap_revenue: 3.99 },
-    { log_date: 20191224, app_id: 10, app_name: 'GAME A', list_order: 9, dau: 426, nru: 83, iap_revenue: 0 },
-    { log_date: 20191224, app_id: 14, app_name: 'GAME B', list_order: 104, dau: 443, nru: 133, iap_revenue: 29.3391 }]
+    // const dailyApps2 = [{ log_date: 20191220, app_id: 10, app_name: 'GAME A', list_order: 9, dau: 503, nru: 115, iap_revenue: 0 },
+    // { log_date: 20191220, app_id: 14, app_name: 'GAME B', list_order: 104, dau: 365, nru: 135, iap_revenue: 0 },
+    // { log_date: 20191221, app_id: 10, app_name: 'GAME A', list_order: 9, dau: 510, nru: 87, iap_revenue: 5.98 },
+    // { log_date: 20191221, app_id: 14, app_name: 'GAME B', list_order: 104, dau: 379, nru: 115, iap_revenue: 2.99 },
+    // { log_date: 20191222, app_id: 10, app_name: 'GAME A', list_order: 9, dau: 466, nru: 92, iap_revenue: 3.99 },
+    // { log_date: 20191222, app_id: 14, app_name: 'GAME B', list_order: 104, dau: 424, nru: 135, iap_revenue: 0 },
+    // { log_date: 20191223, app_id: 10, app_name: 'GAME A', list_order: 9, dau: 456, nru: 91, iap_revenue: 9.99 },
+    // { log_date: 20191223, app_id: 14, app_name: 'GAME B', list_order: 104, dau: 416, nru: 125, iap_revenue: 3.99 },
+    // { log_date: 20191224, app_id: 10, app_name: 'GAME A', list_order: 9, dau: 426, nru: 83, iap_revenue: 0 },
+    // { log_date: 20191224, app_id: 14, app_name: 'GAME B', list_order: 104, dau: 443, nru: 133, iap_revenue: 29.3391 }]
+    const dailyApps = fakedAppsData(from, to)
 
     res.json({ summaries, dailyData, dailyApps })
   } catch (err) {
@@ -76,4 +79,54 @@ export async function get (req: Request, res: Response, next: NextFunction) {
   } finally {
     await db.release()
   }
+}
+
+
+interface dailyProps {
+  log_date: number
+  dau: number
+  nru: number
+  iap_revenue: number
+}
+
+function fakedDilyData(from, to): any[] {
+  let ret = []
+  for(let i = Number(from.replace(/-/g, '')) ; i <= Number(to.replace(/-/g, '')) ; i ++) {
+    const tmp: dailyProps = { log_date: i, 
+      dau: Math.floor(Math.random() * 800) + 500, 
+      nru: Math.floor(Math.random() * 100) + 200, 
+      iap_revenue: Math.floor(Math.random() * 3000), 
+    }
+    ret.push(tmp)
+  }
+  return ret
+}
+
+interface appsProps {
+  log_date: number
+  app_id: number
+  app_name: string
+  list_order: number
+  dau: number
+  nru: number
+  iap_revenue: string
+}
+//log_date: 20191224, app_id: 14, app_name: 'GAME B', list_order: 104, dau: 443, nru: 133, iap_revenue: 29.3391
+function fakedAppsData(from, to): any[] {
+  let ret = []
+  for(let i = Number(from.replace(/-/g, '')) ; i <= Number(to.replace(/-/g, '')) ; i ++) {
+    const tmp: appsProps = { log_date: i, app_id: 9, app_name: 'GAME A', list_order: 9,
+      dau: Math.floor(Math.random() * 800) + 500, 
+      nru: Math.floor(Math.random() * 100) + 200, 
+      iap_revenue: (Math.floor(Math.random() * 700) / 100).toFixed(2), 
+    }
+    ret.push(tmp)
+    const tmp2: appsProps = { log_date: i, app_id: 14, app_name: 'GAME B', list_order: 104,
+      dau: Math.floor(Math.random() * 800) + 500, 
+      nru: Math.floor(Math.random() * 100) + 200, 
+      iap_revenue: (Math.floor(Math.random() * 700) / 100).toFixed(2), 
+    }
+    ret.push(tmp2)
+  }
+  return ret
 }

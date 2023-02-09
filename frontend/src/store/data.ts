@@ -1,13 +1,20 @@
 import { defineStore } from 'pinia'
 import { accountStore } from '@/store'
+import { format, sub } from 'date-fns'
 
 import axios from 'axios'
 const baseUrl = `${import.meta.env.VITE_API_URL}`
+const now = new Date()
 export const dataStore = defineStore('data', {
   
   state: () => ({
-    totalSearchStart : '2022-12-20',
-    totalSearchEnd : '2022-12-25',
+    totalSearchStart : format(
+      sub(now, {
+        days: 5
+      }),
+      'yyyy-MM-dd'
+    ),
+    totalSearchEnd : format(new Date(now), 'yyyy-MM-dd'),
     totalSearchType : 'avg',
     totalSearchData : <any>[],
     dailyTotalData : <any>[],
