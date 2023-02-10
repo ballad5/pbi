@@ -1,5 +1,5 @@
 <template>
-  <v-container class="white">
+  <v-container class="white" @click="commonStore.offDrawer()">
     <v-row class="display-1">
       <v-col cols="12">
         {{ appName }} - Retention
@@ -108,7 +108,7 @@ export default class Retention extends Vue {
   private dataStore = dataStore()
   private accountStore = accountStore()
   private appStore = appStore()
-  private commonStore = commonStore()
+  public commonStore = commonStore()
 
   private route = useRoute()
   private router = useRouter()

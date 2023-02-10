@@ -4,8 +4,9 @@ import { defineStore } from 'pinia'
 export const commonStore = defineStore('common', {
   state: () => ({
     uri: localStorage.getItem('last_uri') || '/',
+    layoutDrawer: true
   }),
-  getters: {
+  getters: {    
     lastUri(state): string {
       return state.uri
     },
@@ -56,12 +57,25 @@ export const commonStore = defineStore('common', {
       UY: 'Uruguay', UZ: 'Uzbekistan', VU: 'Vanuatu', VE: 'Venezuela', VN: 'Viet Nam', VG: 'Virgin Islands, British',
       VI: 'Virgin Islands, U.S.', WF: 'Wallis And Futuna', EH: 'Western Sahara', YE: 'Yemen', ZM: 'Zambia',
       ZW: 'Zimbabwe', UK: 'United Kingdom'
-    }}
+    }},
+    drawer(state) {
+        return state.layoutDrawer
+    },
   },
   actions: {
     routing(path: string) {
       this.uri = path
       localStorage.setItem('last_uri', path)
     },
+    toggleDrawer() {
+      this.layoutDrawer = !this.layoutDrawer
+    },
+    offDrawer() {
+      this.layoutDrawer = false
+    },
   },
+  // setter: {
+
+  // }
+  
 })

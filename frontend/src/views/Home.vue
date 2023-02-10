@@ -1,6 +1,6 @@
 <template>
-  <v-main>
-  <v-container>
+  <v-main >
+  <v-container @click="commonStore.offDrawer()">
     <v-card>      
       <v-card-title>Game Report</v-card-title>      
       <v-divider class="mx-4"></v-divider>
@@ -88,7 +88,7 @@ import Datepicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
 // @ts-ignore
 import { SetTwo6 } from 'chartjs-plugin-colorschemes/src/colorschemes/colorschemes.brewer'
-import { dataStore, accountStore } from '@/store'
+import { dataStore, accountStore, commonStore } from '@/store'
 import { useRouter, useRoute } from 'vue-router'
 
 Chart.register(...registerables)
@@ -111,6 +111,7 @@ export default class Home extends Vue {
 
   private dataStore = dataStore()
   private accountStore = accountStore()
+  public commonStore = commonStore()
 
   public route = useRoute()
   private router = useRouter()

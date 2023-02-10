@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container @click="commonStore.offDrawer()">
     <v-card>
       <v-card-title>{{ appName }} - 게임 지표 현황</v-card-title>
       <v-divider class="mx-4"></v-divider>
@@ -127,7 +127,7 @@ export default class AppStat extends Vue {
   private dataStore = dataStore()
   private accountStore = accountStore()
   private appStore = appStore()
-  private commonStore = commonStore()
+  public commonStore = commonStore()
 
   private route = useRoute()
   private router = useRouter()

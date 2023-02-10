@@ -1,6 +1,6 @@
 <template>
   <v-app id="inspire">
-    <v-navigation-drawer v-model="drawer" app>
+    <v-navigation-drawer v-model="drawerStore" app>
       <v-list-item to="/">
         <v-list>
           <v-list-item-title class="title">
@@ -62,7 +62,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-toolbar @click.stop="drawer = !drawer" color="deep-purple accent-4">
+    <v-toolbar @click.stop="commonStore.toggleDrawer()" color="deep-purple accent-4">
       <v-toolbar-title>Menu</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-tooltip bottom>
@@ -92,14 +92,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-facing-decorator'
-import { accountStore } from '@/store'
+import { Component, Vue, Watch } from 'vue-facing-decorator'
+import { accountStore, commonStore } from '@/store'
 import { useRouter, useRoute } from 'vue-router'
 import { AuthPrivilege } from '@/util/enum'
 
 @Component({})
 export default class CommonLayout extends Vue {
-  public drawer: boolean = true
+
   public dashboards = [
     { text: 'Game Report', icon: 'mdi-table-large', path: '/' }
   ]
@@ -122,8 +122,16 @@ export default class CommonLayout extends Vue {
   public selectedMenu = ''
 
   private accountStore = accountStore()
+  public commonStore = commonStore()
   public route = useRoute()
   public router = useRouter()
+
+  public get drawerStore() {
+    return this.commonStore.drawer
+  }
+  public set drawerStore(val: boolean) {
+    this.commonStore.toggleDrawer()
+  }
 
   // public get PrivilegeDef() {
   //   return AuthPrivilege
