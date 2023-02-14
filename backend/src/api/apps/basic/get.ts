@@ -1,10 +1,9 @@
 import { Request } from '../../../@types/request'
+import { StatisticsDaily } from '../../../@types/statistics-daily'
 import { Response, NextFunction } from 'express'
-import { DB } from '../../../util/db'
-import { Datastores } from '../../../config/datastore'
 import { ApiError, ErrorDefine } from '../../../util/error'
 import {parse, format, addDays} from 'date-fns'
-import { StatisticsDailyModel } from '../../../model/statistics-daily'
+import { StatisticsDailyRepository } from '../../../model/statistics-daily'
 import isEmpty from 'lodash/isEmpty'
 
 export async function get (req: Request, res: Response, next: NextFunction) {
@@ -26,8 +25,10 @@ export async function get (req: Request, res: Response, next: NextFunction) {
     to = new Date(Number(to[0]), Number(to[1]) - 1, Number(to[2]))
   }
 
-  const statisticsDailyModel = new StatisticsDailyModel()
-  const statisticsDailyData = await statisticsDailyModel.find(Number(req.params.appId), from, to)
+  const statisticsDailyModel = new StatisticsDailyRepository()
+  await statisticsDailyModel.init()
+  const statisticsDailyData = await statisticsDailyModel.find(
+    Number(req.params.appId), Number(format(from, 'yyyyMMdd')), Number(format(to, 'yyyyMMdd')))
 
   if (!platform) platform = 'all'
   if (!country) country = 'all'
@@ -38,7 +39,28 @@ export async function get (req: Request, res: Response, next: NextFunction) {
   const ret: any = {}
   ret.appName = req.params.appId === '10' ? 'GAME A' : 'GAME B'
   ret.countries = ['KR']
-  ret.data = statisticsDailyData
+  ret.data = await getFakeData(Number(req.params.appId),
+    Number(format(from, 'yyyyMMdd')), Number(format(to, 'yyyyMMdd')))
               
   res.json(ret)
+}
+
+async function getFakeData(appId, from, to): Promise<any> {
+  const diffDay = Number(to) - Number(from)
+  const data = []
+  for(let i = Number(from) ; i <= Number(to) ; i ++) {
+    const tmp: StatisticsDaily = {
+      id: '',
+      appId: appId,
+      log_date: i,
+      dau: Math.floor(Math.random() * 100) + 200,
+      nru: Math.floor(Math.random() * 90) + 10,
+      iap_revenue: 0,
+      pu: 0,
+      npu: 0
+    }
+    
+    data.push(tmp)
+  }
+  return data
 }
