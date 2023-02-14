@@ -1,4 +1,5 @@
 export interface StatisticsDaily {
+  id: string
   appId: number
   log_date: number
   dau: number
