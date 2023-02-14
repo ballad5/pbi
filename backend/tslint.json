@@ -2,6 +2,7 @@
   "extends": "tslint-config-standard",
   "rules": {
     "space-before-function-paren": true,
-    "semicolon": [true, "never"]
+    "semicolon": [true, "never"],
+    "variable-name": [false, "check-format", "allow-leading-underscore"]
   }
 }

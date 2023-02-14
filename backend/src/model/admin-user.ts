@@ -2,7 +2,7 @@ import { BaseModel, Collection, getRepository, BaseFirestoreRepository } from '.
 import { AdminUser } from '../@types/admin-user'
 
 @Collection('admin_user')
-class AdminUserModel implements AdminUser  {
+class AdminUserModel implements AdminUser {
   id: string
   email: string
   password: string
@@ -15,13 +15,13 @@ class AdminUserModel implements AdminUser  {
 export class AdminUserRepository extends BaseModel {
   private rep
   constructor () {
-    super()    
+    super()
     this.tableName = 'admin_user'
   }
 
-  async init() {    
+  async init () {
     try {
-      this.rep = await getRepository(AdminUserModel)
+      this.rep = getRepository(AdminUserModel)
     } catch (err) {
       throw err
     }
@@ -35,7 +35,7 @@ export class AdminUserRepository extends BaseModel {
     }
   }
 
-  async update (item: AdminUser) {    
+  async update (item: AdminUser) {
     try {
       await this.rep.update(item)
     } catch (err) {

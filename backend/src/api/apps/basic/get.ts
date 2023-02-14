@@ -2,7 +2,7 @@ import { Request } from '../../../@types/request'
 import { StatisticsDaily } from '../../../@types/statistics-daily'
 import { Response, NextFunction } from 'express'
 import { ApiError, ErrorDefine } from '../../../util/error'
-import {parse, format, addDays} from 'date-fns'
+import { parse, format, addDays } from 'date-fns'
 import { StatisticsDailyRepository } from '../../../model/statistics-daily'
 import isEmpty from 'lodash/isEmpty'
 
@@ -12,13 +12,13 @@ export async function get (req: Request, res: Response, next: NextFunction) {
   }
   let { platform, country, from, to } = req.query
 
-  if(isEmpty(from)) {
+  if (isEmpty(from)) {
     from = new Date()
   } else {
     from = from.split('-')
     from = new Date(Number(from[0]), Number(from[1]) - 1, Number(from[2]))
   }
-  if(isEmpty(to)) {
+  if (isEmpty(to)) {
     to = new Date()
   } else {
     to = to.split('-')
@@ -41,14 +41,14 @@ export async function get (req: Request, res: Response, next: NextFunction) {
   ret.countries = ['KR']
   ret.data = await getFakeData(Number(req.params.appId),
     Number(format(from, 'yyyyMMdd')), Number(format(to, 'yyyyMMdd')))
-              
+
   res.json(ret)
 }
 
-async function getFakeData(appId, from, to): Promise<any> {
+async function getFakeData (appId, from, to): Promise<any> {
   const diffDay = Number(to) - Number(from)
   const data = []
-  for(let i = Number(from) ; i <= Number(to) ; i ++) {
+  for (let i = Number(from) ; i <= Number(to) ; i ++) {
     const tmp: StatisticsDaily = {
       id: '',
       appId: appId,
@@ -59,7 +59,7 @@ async function getFakeData(appId, from, to): Promise<any> {
       pu: 0,
       npu: 0
     }
-    
+
     data.push(tmp)
   }
   return data

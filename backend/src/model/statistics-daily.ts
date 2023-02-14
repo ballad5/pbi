@@ -2,7 +2,7 @@ import { BaseModel, Collection, getRepository, BaseFirestoreRepository } from '.
 import { StatisticsDaily } from '../@types/statistics-daily'
 
 @Collection('statistics_daily')
-class StatisticsDailyModel implements StatisticsDaily  {
+class StatisticsDailyModel implements StatisticsDaily {
   id: string
   appId: number
   log_date: number
@@ -16,13 +16,13 @@ class StatisticsDailyModel implements StatisticsDaily  {
 export class StatisticsDailyRepository extends BaseModel {
   private rep
   constructor () {
-    super()    
+    super()
     this.tableName = 'statistics_daily'
   }
 
-  async init() {
+  async init () {
     try {
-      this.rep = await getRepository(StatisticsDailyModel)
+      this.rep = getRepository(StatisticsDailyModel)
     } catch (err) {
       throw err
     }
@@ -61,5 +61,5 @@ export class StatisticsDailyRepository extends BaseModel {
 // whereLessOrEqualThan "age" <= 9
 // whereArrayContains
 // wherein
-// whereArrayContainsAny 
+// whereArrayContainsAny
 }

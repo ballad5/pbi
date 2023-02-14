@@ -7,9 +7,9 @@ export abstract class BaseModel {
   // protected db: DB
   protected querySnapshot: any
 
-  constructor() {
+  constructor () {
     this.db = DB
   }
 }
 
-export {Collection, getRepository, BaseFirestoreRepository}
+export { Collection, getRepository, BaseFirestoreRepository }

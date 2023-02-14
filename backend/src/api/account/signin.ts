@@ -10,7 +10,7 @@ export async function postSignIn (req: Request, res: Response, next: NextFunctio
   const { email, password } = req.body
   if (!email || !password) {
     throw new ApiError(ErrorDefine.BAD_REQUEST)
-  }  
+  }
 
   const account = { email: email, name: 'test' }
   const token = jwtSign({ account: account }, AppSecret.jwtToken, { expiresIn: '7d' })
@@ -18,7 +18,7 @@ export async function postSignIn (req: Request, res: Response, next: NextFunctio
   const adminUserModel = new AdminUserRepository()
   await adminUserModel.init()
   let adminUserData = await adminUserModel.findOne(email)
-  
+
   const result = await verifyPassword(password, adminUserData.salt, adminUserData.password)
   if (result) {
     adminUserData.date_mod = Date.now()
